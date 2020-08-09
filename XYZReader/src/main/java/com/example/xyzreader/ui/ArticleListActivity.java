@@ -19,12 +19,16 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
+import com.google.android.material.appbar.AppBarLayout;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -58,7 +62,59 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
+
         final View toolbarContainerView = findViewById(R.id.toolbar_container);
+
+       AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.toolbar_container);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+
+               Log.v("xyzz", String.valueOf(verticalOffset));
+
+                ImageView logoBig =  findViewById(R.id.bigLogo);
+                Log.v("zyzwidth", String.valueOf(logoBig.getLayoutParams().width));
+
+
+                if (verticalOffset == 0)
+                {
+                    // Fully expanded
+
+                    Log.v("xyzz0", String.valueOf(verticalOffset));
+                    Log.v("xyzzapp0", String.valueOf(appBarLayout.getTotalScrollRange()));
+                    ImageView logoSmall =  findViewById(R.id.logoSmall);
+                    logoSmall.setVisibility(View.INVISIBLE);
+
+                }
+                else if (Math.abs(verticalOffset) == appBarLayout.getTotalScrollRange())
+                {
+                    //  fully collapsed
+                    Log.v("xyzzscroll", String.valueOf(verticalOffset));
+                    Log.v("xyzzappscroll", String.valueOf(appBarLayout.getTotalScrollRange()));
+
+                    ImageView logoSmall =  findViewById(R.id.logoSmall);
+                    logoSmall.setVisibility(View.VISIBLE);
+                    logoBig.getLayoutParams().width = 0;
+                    logoBig.requestLayout();
+                }
+                else {
+
+                    Log.v("xyzzselse", String.valueOf(verticalOffset));
+                    Log.v("xyzzappelse", String.valueOf(appBarLayout.getTotalScrollRange()));
+                    ImageView logoSmall =  findViewById(R.id.logoSmall);
+                    logoSmall.setVisibility(View.INVISIBLE);
+
+
+                    Log.v("zyzwidth2", String.valueOf(appBarLayout.getMeasuredState()));
+                    logoBig.getLayoutParams().width = appBarLayout.getMeasuredHeight();
+                    logoBig.requestLayout();
+
+                }
+
+            }
+        });
+
+
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
@@ -206,4 +262,7 @@ public class ArticleListActivity extends AppCompatActivity implements
             subtitleView =  view.findViewById(R.id.article_subtitle);
         }
     }
+
+
+
 }
